@@ -7,7 +7,6 @@ load_dotenv()
 
 # Access API keys
 openai_api_key = os.getenv("OPENAI_API_KEY")
-quadrant_api_key = os.getenv("QUADRANT_API_KEY")
 
 
 # loading all PDFs, text files and word documents in a folder
@@ -20,13 +19,29 @@ def load_documents(folder_path):
 
     documents = []
     for loader in loaders:
-        documents.extend(loader.load())
+        
+        print(f"Loaded files with {loader.glob}:")
+        loaded_docs = loader.load()
+
+        for doc in loaded_docs:
+            print(f" - {doc.metadata.get('source', 'No source info')}")
+
+        # Removing duplicates by checking the document paths
+        seen_files = set()
+
+        for doc in loaded_docs:
+            file_path = doc.metadata.get('source')
+            if file_path not in seen_files:
+                documents.append(doc)
+                seen_files.add(file_path)
+
+        print(f"Total files loaded: {len(documents)}")
 
     return documents
 
-docs = load_documents("internal_documents/")
+docs = load_documents("internal_documents")
 
-print(f"Loader {len(docs)} documents.")
+
 
 
 
