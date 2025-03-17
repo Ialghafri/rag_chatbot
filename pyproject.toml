@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "rag-chatbot"
+version = "0.1.0"
+description = ""
+authors = ["Ibrahim Al Ghafri <ibrahim.ghafri@rihal.om>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+dotenv = "^0.9.9"
+langchain = "^0.3.20"
+openai = "^1.66.3"
+quadrant = "^1.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
