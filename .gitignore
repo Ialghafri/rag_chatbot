@@ -1,3 +1,6 @@
 .env
-.internal_documents/
+internal_documents/
 .venv/
+qdrant_data/
+qdrant_storage/
+vector_space/
