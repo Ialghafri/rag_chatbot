@@ -8,7 +8,8 @@ from qdrant_client.models import Distance, VectorParams, PointStruct
 from langchain_openai import OpenAIEmbeddings
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
-
+from langchain.chains import RetrievalQA
+from langchain.chat_models import ChatOpenAI
 
 
 # Load environment variables from .env file
@@ -94,6 +95,8 @@ operation_info = client.upsert(
 )
 
 print(operation_info)
+
+
 
 
 # Deleting an existing collection to create a new one
