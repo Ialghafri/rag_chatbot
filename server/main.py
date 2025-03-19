@@ -1,6 +1,15 @@
 import os
 from dotenv import load_dotenv
-from langchain.document_loaders import DirectoryLoader, PyPDFLoader, TextLoader, UnstructuredWordDocumentLoader
+from langchain_community.document_loaders import DirectoryLoader, PyPDFLoader, TextLoader, UnstructuredWordDocumentLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.embeddings import OpenAIEmbeddings
+from qdrant_client import QdrantClient
+from qdrant_client.models import Distance, VectorParams, PointStruct
+from langchain_openai import OpenAIEmbeddings
+from qdrant_client import QdrantClient
+from qdrant_client.http import models
+
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -41,11 +50,12 @@ def load_documents(folder_path):
 
 docs = load_documents("internal_documents")
 
+# Splitting large documents into smaller chunks for retrieval
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+chunks = text_splitter.split_documents(docs)
 
-
-
-
-
-
+# Generate embeddings using openAI
+embeddings = OpenAIEmbeddings()
+chunk_vectors = embeddings.embed_documents([chunk.page_content for chunk in chunks])  # Access 'page_content' of each chunk
 
 

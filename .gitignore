@@ -1,3 +1,10 @@
 .env
-.internal_documents/
+internal_documents/
 .venv/
+qdrant_data/
+qdrant_storage/
+frontend/Dockerfile
+server/Dockerfile
+vector_space/
+Docker-compose.yml
+server/queries.py
