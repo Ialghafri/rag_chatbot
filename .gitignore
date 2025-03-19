@@ -4,4 +4,3 @@ internal_documents/
 qdrant_data/
 qdrant_storage/
 vector_space/
-server/queries.py
