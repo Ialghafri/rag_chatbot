@@ -1,13 +1,17 @@
-from main import collection_name
-from main import openai_api_key
-from langchain_community.chat_models import ChatOpenAI
-from main import client
-from main import embeddings
 from openai import OpenAI
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+#from main import collection_name
+from server.main import openai_api_key
+from server.main import client
+from server.main import embeddings
 
 
 def search_qdrant(query_text, client, collection_name, embeddings):
-    """Search Qdrant for the most relevant docuemnt chunks."""
+    """Search Qdrant for the most relevant document chunks."""
 
     query_vector = embeddings.embed_query(query_text)
 
@@ -63,8 +67,8 @@ def query_rag_system(query_text, client, collection_name, embeddings, openai_api
     return response
 
 
-query = "What are the contents of the Team Collaboration & Project Guidelines Document? Can you summerise it for me?"
+# query = "What are the contents of the Team Collaboration & Project Guidelines Document? Can you summerise it for me?"
 
-response = query_rag_system(query, client, "test_collection", embeddings, openai_api_key)
-print(response.content)
+# response = query_rag_system(query, client, "test_collection", embeddings, openai_api_key)
+# print(response.content)
 

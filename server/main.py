@@ -4,12 +4,10 @@ from langchain_community.document_loaders import DirectoryLoader, PyPDFLoader, T
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import OpenAIEmbeddings
 from qdrant_client import QdrantClient
-from qdrant_client.models import Distance, VectorParams, PointStruct
+from qdrant_client.models import PointStruct
 from langchain_openai import OpenAIEmbeddings
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
-from langchain.chains import RetrievalQA
-from langchain.chat_models import ChatOpenAI
 
 
 # Load environment variables from .env file
@@ -94,7 +92,7 @@ operation_info = client.upsert(
     points=points,
 )
 
-print(operation_info)
+#print(operation_info)
 
 
 
