@@ -9,7 +9,6 @@ from langchain_openai import OpenAIEmbeddings
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
 
-
 # Load environment variables from .env file
 load_dotenv()
 
@@ -33,7 +32,7 @@ def load_documents(folder_path):
 
         for doc in loaded_docs:
             print(f" - {doc.metadata.get('source', 'No source info')}")
-
+ 
         # Removing duplicates by checking the document paths
         seen_files = set()
 

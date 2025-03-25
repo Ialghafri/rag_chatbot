@@ -1,6 +1,12 @@
 from openai import OpenAI
 import sys
 import os
+from langchain_community.document_loaders import DirectoryLoader, PyPDFLoader, TextLoader, UnstructuredWordDocumentLoader
+from pathlib import Path
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from qdrant_client.models import PointStruct
+from qdrant_client import QdrantClient
+
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -9,6 +15,79 @@ from server.main import openai_api_key
 from server.main import client
 from server.main import embeddings
 
+
+# loading all PDFs, text files and word documents in a folder
+def load_documents(folder_path):
+    loaders = [
+        DirectoryLoader(folder_path, glob="*.pdf", loader_cls=PyPDFLoader),
+        DirectoryLoader(folder_path, glob="*.txt", loader_cls=TextLoader),
+        DirectoryLoader(folder_path, glob="*.docx", loader_cls=UnstructuredWordDocumentLoader)
+    ]
+
+    documents = []
+    for loader in loaders:
+        
+        print(f"Loaded files with {loader.glob}:")
+        loaded_docs = loader.load()
+
+        for doc in loaded_docs:
+            print(f" - {doc.metadata.get('source', 'No source info')}")
+
+        # Removing duplicates by checking the document paths
+        seen_files = set()
+
+        for doc in loaded_docs:
+            file_path = doc.metadata.get('source')
+            if file_path not in seen_files:
+                documents.append(doc)
+                seen_files.add(file_path)
+
+        print(f"Total files loaded: {len(documents)}")
+
+    return documents
+
+def process_uploaded_file(uploaded_file):
+    """Process and save the uploaded file, then return the loaded documents"""
+
+    # Save the uploaded file to the local directory
+    file_path = Path("internal_documents") / uploaded_file.name
+    with open(file_path, "wb") as f:
+        f.write(uploaded_file.getbuffer())
+
+    # load the newly uploaded document
+    docs = load_documents("internal_documents")
+    return docs
+
+def upsert_documents_to_qdrant(docs, embeddings, collection_name="test_collection"):
+    """Split documents into chunks, generate embeddings, and upsert into Qdrant."""
+
+    # Splitting large documents into smaller chunks for retrival 
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+    chunks = text_splitter.split_documents(docs)
+
+    # Generate embeddings for chunks
+    chunk_vectors = embeddings.embed_documents([chunk.page_content for chunk in chunks])
+
+    # Initialize quadrant client
+    client = QdrantClient(url="http://localhost:6333")
+
+    # prepare points for upsert
+    points = []
+    for idx, chunk in enumerate(chunks):
+        vector = chunk_vectors[idx]
+        points.append(PointStruct(id=idx+1, vector=vector, payload={"chunk_id": f"chunk_{idx+1}", "text": chunk.page_content}))
+
+
+    # Upsert data to Qdrant
+    operation_info = client.upsert(
+        collection_name="test_collection",
+        wait=True,
+        points=points,
+    )
+
+    print(f"Upsert operation completed. Total {len(points)} points added.")
+
+    return operation_info
 
 def search_qdrant(query_text, client, collection_name, embeddings):
     """Search Qdrant for the most relevant document chunks."""

@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "rag-chatbot"
+name = "frontend"
 version = "0.1.0"
 description = ""
 authors = ["Ibrahim Al Ghafri <ibrahim.ghafri@rihal.om>"]
@@ -7,15 +7,10 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-dotenv = "^0.9.9"
-langchain = "^0.3.20"
-openai = "^1.66.3"
-quadrant = "^1.0"
-langchain-community = "^0.3.19"
-pypdf = "^5.4.0"
-unstructured = "^0.17.0"
-python-docx = "^1.1.2"
+streamlit = "^1.43.2"
+langchain = "^0.3.21"
 qdrant-client = "^1.13.3"
+uvicorn = "^0.34.0"
 
 
 [build-system]
