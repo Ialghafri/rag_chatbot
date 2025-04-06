@@ -10,7 +10,7 @@ from pathlib import Path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # Now import from server
-from server.tools import query_rag_system, client, embeddings, openai_api_key, process_uploaded_file, upsert_documents_to_qdrant
+from server.tools import query_rag_system, client, openai_api_key, process_uploaded_file, upsert_documents_to_qdrant
 
 # Streamlit frontend
 st.title("RAG Chatbot")
@@ -45,6 +45,8 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+embeddings = OpenAIEmbeddings()
+
 # User input
 query = st.chat_input("Enter your question:")
 
@@ -52,14 +54,10 @@ query = st.chat_input("Enter your question:")
 if query:
 
     st.session_state.messages.append({"role": "user", "content": query})
-        
     response = query_rag_system(query, client, "test_collection", embeddings, openai_api_key)
-
     st.session_state.messages.append({"role": "assistant", "content": response.content})
-
     #with st.chat_message("assistant"):
     #    st.markdown(response.content)
-
     st.rerun()
 
 
